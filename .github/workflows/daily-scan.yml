@@ -3,34 +3,32 @@ name: Daily Trading Rule Scan
 on:
   workflow_dispatch:
     schedule:
-        # 6:30 AM Malaysia time, Monday to Friday
-            # GitHub Actions uses UTC: 22:30 UTC = 6:30 AM MYT next day
-                - cron: "30 22 * * 1-5"
+        - cron: "30 22 * * 1-5"
 
-                permissions:
-                  contents: write
+        permissions:
+          contents: write
 
-                  jobs:
-                    scan-and-deploy:
-                        runs-on: ubuntu-latest
-                            steps:
-                                  - name: Checkout repository
-                                          uses: actions/checkout@v4
-                                                - name: Set up Python
-                                                        uses: actions/setup-python@v5
-                                                                with:
-                                                                          python-version: "3.11"
-                                                                                - name: Install dependencies
-                                                                                        run: pip install -r requirements.txt
-                                                                                              - name: Run scanner
-                                                                                                      env:
-                                                                                                                ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-                                                                                                                          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-                                                                                                                                    TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-                                                                                                                                              PUBLIC_REPORT_URL: ${{ secrets.PUBLIC_REPORT_URL }}
-                                                                                                                                                      run: python screen.py
-                                                                                                                                                            - name: Deploy mobile report to GitHub Pages
-                                                                                                                                                                    uses: peaceiris/actions-gh-pages@v3
-                                                                                                                                                                            with:
-                                                                                                                                                                                      github_token: ${{ github.token }}
-                                                                                                                                                                                                publish_dir: ./output
+          jobs:
+            scan-and-deploy:
+                runs-on: ubuntu-latest
+                    steps:
+                          - name: Checkout repository
+                                  uses: actions/checkout@v4
+                                        - name: Set up Python
+                                                uses: actions/setup-python@v5
+                                                        with:
+                                                                  python-version: "3.11"
+                                                                        - name: Install dependencies
+                                                                                run: pip install -r requirements.txt
+                                                                                      - name: Run scanner
+                                                                                              env:
+                                                                                                        ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+                                                                                                                  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+                                                                                                                            TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+                                                                                                                                      PUBLIC_REPORT_URL: ${{ secrets.PUBLIC_REPORT_URL }}
+                                                                                                                                              run: python screen.py
+                                                                                                                                                    - name: Deploy mobile report to GitHub Pages
+                                                                                                                                                            uses: peaceiris/actions-gh-pages@v3
+                                                                                                                                                                    with:
+                                                                                                                                                                              github_token: ${{ github.token }}
+                                                                                                                                                                                        publish_dir: ./output
