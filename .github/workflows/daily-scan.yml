@@ -1,35 +1,36 @@
 name: Daily Trading Rule Scan
 
 on:
-  schedule:
-      - cron: '30 22 * * 1-5'
-        workflow_dispatch:
+  workflow_dispatch:
+    schedule:
+        # 6:30 AM Malaysia time, Monday to Friday
+            # GitHub Actions uses UTC: 22:30 UTC = 6:30 AM MYT next day
+                - cron: "30 22 * * 1-5"
 
-        jobs:
-          scan:
-              runs-on: ubuntu-latest
+                permissions:
+                  contents: write
 
-                      steps:
-                          - uses: actions/checkout@v3
-
-                                  - name: Set up Python
-                                        uses: actions/setup-python@v4
-                                              with:
-                                                      python-version: '3.11'
-
-                                                              - name: Install dependencies
-                                                                    run: python -m pip install --upgrade pip && pip install -r requirements.txt
-
-                                                                            - name: Run daily scan
-                                                                                  env:
-                                                                                          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-                                                                                                  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-                                                                                                          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-                                                                                                                  PUBLIC_REPORT_URL: ${{ secrets.PUBLIC_REPORT_URL }}
-                                                                                                                        run: python screen.py
-                                                                                                                            
-                                                                                                                                - name: Deploy to GitHub Pages
-                                                                                                                                      uses: peaceiris/actions-gh-pages@v3
-                                                                                                                                            with:
-                                                                                                                                                    github_token: ${{ secrets.GITHUB_TOKEN }}
-                                                                                                                                                            publish_dir: ./output
+                  jobs:
+                    scan-and-deploy:
+                        runs-on: ubuntu-latest
+                            steps:
+                                  - name: Checkout repository
+                                          uses: actions/checkout@v4
+                                                - name: Set up Python
+                                                        uses: actions/setup-python@v5
+                                                                with:
+                                                                          python-version: "3.11"
+                                                                                - name: Install dependencies
+                                                                                        run: pip install -r requirements.txt
+                                                                                              - name: Run scanner
+                                                                                                      env:
+                                                                                                                ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+                                                                                                                          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+                                                                                                                                    TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+                                                                                                                                              PUBLIC_REPORT_URL: ${{ secrets.PUBLIC_REPORT_URL }}
+                                                                                                                                                      run: python screen.py
+                                                                                                                                                            - name: Deploy mobile report to GitHub Pages
+                                                                                                                                                                    uses: peaceiris/actions-gh-pages@v3
+                                                                                                                                                                            with:
+                                                                                                                                                                                      github_token: ${{ github.token }}
+                                                                                                                                                                                                publish_dir: ./output
