@@ -2,8 +2,8 @@ name: Daily Trading Rule Scan
 on:
   workflow_dispatch:
     schedule:
-        - cron: '30 22 * * 1-5'
-        permissions:
+    - cron: "30 22 * * 1-5"
+    permissions:
           contents: write
           jobs:
             scan-and-deploy:
