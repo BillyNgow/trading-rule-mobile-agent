@@ -14,9 +14,6 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 PUBLIC_REPORT_URL = os.getenv("PUBLIC_REPORT_URL", "")
 
-if not API_KEY:
-    raise ValueError("Missing ALPHA_VANTAGE_API_KEY.")
-
 TICKERS_FILE = "tickers.txt"
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -225,30 +222,100 @@ def telegram_summary(results):
     link = f"\n\nOpen mobile dashboard:\n{PUBLIC_REPORT_URL}" if PUBLIC_REPORT_URL else ""
     return f"<b>Daily Rule Quality Report</b>\n{generated}\n\n<b>A/B candidates:</b>\n{candidates}\n\n<b>Top 5:</b>\n{top}{link}\n\nNot buy/sell signals. Manual review required."
 
-def main():
-    tickers = [x.strip() for x in open(TICKERS_FILE, encoding="utf-8") if x.strip()]
+# (ticker, close, sma20, sma50, sma200, high20, low20, volume, avgvol20, rsi14, atr14)
+# Each row is hand-engineered so score_setup() produces a realistic grade spread.
+SAMPLE_SCENARIOS = [
+    # ── Grade A ──────────────────────────────────────────────────────────────
+    ("NVDA",   880.0,  865.0,  820.0,  720.0, 1050.0,  820.0, 45_000_000, 35_000_000, 58.0, 18.5),
+    ("AAPL",   192.0,  188.0,  178.0,  160.0,  245.0,  168.0, 72_000_000, 55_000_000, 55.0,  3.2),
+    # ── Grade B ──────────────────────────────────────────────────────────────
+    ("MSFT",   415.0,  412.0,  395.0,  360.0,  450.0,  385.0, 19_000_000, 19_000_000, 62.0,  6.8),
+    ("META",   505.0,  498.0,  472.0,  420.0,  560.0,  460.0, 15_000_000, 16_000_000, 64.0,  9.2),
+    ("AMZN",   190.0,  186.0,  175.0,  158.0,  215.0,  168.0, 38_000_000, 35_000_000, 60.0,  3.5),
+    ("AVGO",  1680.0, 1650.0, 1580.0, 1420.0, 1800.0, 1580.0,  8_000_000,  9_000_000, 63.0, 28.0),
+    # ── Grade C ──────────────────────────────────────────────────────────────
+    ("GOOGL",  175.0,  178.0,  168.0,  152.0,  185.0,  162.0, 25_000_000, 28_000_000, 48.0,  3.1),
+    ("V",      278.0,  272.0,  260.0,  242.0,  295.0,  258.0,  7_000_000,  9_000_000, 66.0,  4.8),
+    ("MA",     458.0,  448.0,  432.0,  398.0,  475.0,  430.0,  4_000_000,  6_000_000, 67.0,  7.5),
+    ("COST",   885.0,  870.0,  845.0,  790.0,  920.0,  850.0,  3_000_000,  4_000_000, 68.0, 12.0),
+    ("LRCX",   890.0,  875.0,  840.0,  780.0,  940.0,  830.0,  3_000_000,  4_000_000, 66.0, 14.5),
+    ("AMD",    172.0,  168.0,  158.0,  142.0,  185.0,  155.0, 40_000_000, 52_000_000, 67.0,  3.8),
+    ("CSCO",    52.0,   51.0,   49.0,   46.0,   56.0,   48.0, 18_000_000, 24_000_000, 67.0,  0.9),
+    ("JPM",    203.0,  198.0,  188.0,  172.0,  215.0,  190.0, 12_000_000, 16_000_000, 68.0,  3.5),
+    # ── Grade D ──────────────────────────────────────────────────────────────
+    ("BRK.B",  395.0,  350.0,  420.0,  380.0,  400.0,  360.0,  3_000_000,  6_000_000, 78.0,  6.2),
+    ("XOM",    118.0,  105.0,  128.0,  112.0,  119.0,  110.0, 14_000_000, 22_000_000, 72.0,  2.1),
+    ("CVX",    155.0,  138.0,  168.0,  152.0,  156.0,  148.0, 10_000_000, 16_000_000, 73.0,  2.8),
+    ("BAC",     40.0,   35.0,   44.0,   38.0,   41.0,   36.0, 35_000_000, 55_000_000, 72.0,  0.8),
+    ("JNJ",    148.0,  132.0,  158.0,  145.0,  149.0,  142.0,  6_000_000, 10_000_000, 74.0,  2.2),
+    ("ABBV",   172.0,  155.0,  180.0,  162.0,  174.0,  165.0,  5_000_000,  8_000_000, 75.0,  3.0),
+    ("NFLX",   620.0,  555.0,  640.0,  575.0,  628.0,  590.0,  5_000_000,  8_000_000, 72.0, 14.0),
+    ("ORCL",   128.0,  115.0,  132.0,  118.0,  130.0,  120.0, 10_000_000, 16_000_000, 73.0,  2.2),
+    ("WMT",     68.0,   61.0,   72.0,   64.0,   69.0,   64.0,  8_000_000, 13_000_000, 73.0,  1.2),
+    ("CAT",    352.0,  318.0,  365.0,  335.0,  355.0,  342.0,  3_000_000,  5_000_000, 72.0,  5.8),
+    ("LLY",    798.0,  720.0,  830.0,  745.0,  808.0,  765.0,  5_000_000,  8_000_000, 72.0, 14.2),
+]
+
+def generate_sample_results():
+    from datetime import date
+    today = date.today()
     rows = []
-    for symbol in tickers:
-        print("Processing", symbol)
-        df = fetch_daily(symbol)
-        if df is None or len(df) < 60: continue
-        df = add_indicators(df)
-        latest = df.iloc[-1]
-        rows.append({
-            "Ticker": symbol, "Date": df.index[-1].date(), "Close": safe_round(latest["Close"]),
-            "Volume": int(latest["Volume"]) if pd.notna(latest["Volume"]) else "",
-            "SMA20": safe_round(latest["SMA20"]), "SMA50": safe_round(latest["SMA50"]),
-            "SMA200": safe_round(latest["SMA200"]), "RSI14": safe_round(latest["RSI14"]),
-            "ATR14": safe_round(latest["ATR14"]), **score_setup(latest)
+    for (ticker, close, sma20, sma50, sma200, high20, low20, vol, avgvol, rsi, atr) in SAMPLE_SCENARIOS:
+        latest = pd.Series({
+            "Close": close, "SMA20": sma20, "SMA50": sma50, "SMA200": sma200,
+            "High20": high20, "Low20": low20, "Volume": vol, "AvgVolume20": avgvol,
+            "RSI14": rsi, "ATR14": atr,
         })
-        time.sleep(15)
+        rows.append({
+            "Ticker": ticker, "Date": today,
+            "Close": safe_round(close), "Volume": int(vol),
+            "SMA20": safe_round(sma20), "SMA50": safe_round(sma50),
+            "SMA200": safe_round(sma200), "RSI14": safe_round(rsi), "ATR14": safe_round(atr),
+            **score_setup(latest)
+        })
     results = pd.DataFrame(rows)
-    if results.empty:
-        send_telegram_text("Daily Rule Quality Report: no results generated.")
-        return
-    order = {"A":1,"B":2,"C":3,"D":4}
+    order = {"A": 1, "B": 2, "C": 3, "D": 4}
     results["GradeOrder"] = results["FinalGrade"].map(order)
-    results = results.sort_values(["GradeOrder","Score"], ascending=[True,False]).drop(columns=["GradeOrder"])
+    return results.sort_values(["GradeOrder", "Score"], ascending=[True, False]).drop(columns=["GradeOrder"])
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Daily trading rule quality scanner")
+    parser.add_argument("--sample", action="store_true",
+                        help="Generate reports from synthetic data; no API key needed")
+    args = parser.parse_args()
+
+    if args.sample:
+        print("Running in sample mode — no API calls made.")
+        results = generate_sample_results()
+    else:
+        if not API_KEY:
+            raise ValueError("Missing ALPHA_VANTAGE_API_KEY.")
+        tickers = [x.strip() for x in open(TICKERS_FILE, encoding="utf-8") if x.strip()]
+        rows = []
+        for symbol in tickers:
+            print("Processing", symbol)
+            df = fetch_daily(symbol)
+            if df is None or len(df) < 60: continue
+            df = add_indicators(df)
+            latest = df.iloc[-1]
+            rows.append({
+                "Ticker": symbol, "Date": df.index[-1].date(), "Close": safe_round(latest["Close"]),
+                "Volume": int(latest["Volume"]) if pd.notna(latest["Volume"]) else "",
+                "SMA20": safe_round(latest["SMA20"]), "SMA50": safe_round(latest["SMA50"]),
+                "SMA200": safe_round(latest["SMA200"]), "RSI14": safe_round(latest["RSI14"]),
+                "ATR14": safe_round(latest["ATR14"]), **score_setup(latest)
+            })
+            time.sleep(15)
+        results = pd.DataFrame(rows)
+        if results.empty:
+            send_telegram_text("Daily Rule Quality Report: no results generated.")
+            return
+        order = {"A":1,"B":2,"C":3,"D":4}
+        results["GradeOrder"] = results["FinalGrade"].map(order)
+        results = results.sort_values(["GradeOrder","Score"], ascending=[True,False]).drop(columns=["GradeOrder"])
+
     csv_path = os.path.join(OUTPUT_DIR, "daily_rule_report.csv")
     desktop_path = os.path.join(OUTPUT_DIR, "daily_rule_report.html")
     mobile_path = os.path.join(OUTPUT_DIR, "index.html")
