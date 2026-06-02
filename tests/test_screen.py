@@ -265,6 +265,20 @@ class TestScoreSetupRR:
         assert result["RR_1_to_2_Feasible"] == "Fail"
         assert result["RR_Estimate"] == 0
 
+    def test_stop_tight_note_when_risk_below_half_atr(self):
+        # risk = close - low20 = 100 - 99 = 1, atr14 = 5 → risk < 0.5 * atr14
+        result = screen.score_setup(make_row(Close=100, Low20=99, High20=145, ATR14=5.0))
+        assert "Stop tight vs ATR" in result["Notes"]
+
+    def test_no_stop_tight_note_when_risk_adequate(self):
+        # risk = 100 - 80 = 20, atr14 = 5 → risk >= 0.5 * atr14
+        result = screen.score_setup(make_row(Close=100, Low20=80, High20=145, ATR14=5.0))
+        assert "Stop tight vs ATR" not in result["Notes"]
+
+    def test_no_stop_tight_note_when_atr_unavailable(self):
+        result = screen.score_setup(make_row(Close=100, Low20=99, High20=145))
+        assert "Stop tight vs ATR" not in result["Notes"]
+
     def test_news_risk_is_always_manual(self):
         assert screen.score_setup(make_row())["NewsRisk"] == "Manual"
 

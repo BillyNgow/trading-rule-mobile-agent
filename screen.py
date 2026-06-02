@@ -110,6 +110,7 @@ def score_setup(row):
     else:
         chasing = "High"; notes.append("Chasing risk")
 
+    atr14 = row.get("ATR14", float('nan'))
     risk = close - low20 if pd.notna(low20) else 0
     reward = high20 - close if pd.notna(high20) else 0
     rr = reward / risk if risk > 0 else 0
@@ -119,6 +120,10 @@ def score_setup(row):
         score += 8; rr_state = "Close"; notes.append("R:R not fully 1:2")
     else:
         rr_state = "Fail"; notes.append("Poor estimated R:R")
+
+    if pd.notna(atr14) and atr14 > 0:
+        if risk < atr14 * 0.5:
+            notes.append("Stop tight vs ATR")
 
     score += 5
     news = "Manual"
