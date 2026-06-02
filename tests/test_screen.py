@@ -188,6 +188,20 @@ class TestScoreSetupTrend:
         result = screen.score_setup(make_row(SMA20=np.nan, SMA50=np.nan))
         assert result["CleanTrend"] == "Weak"
 
+    def test_clean_when_close_above_sma200(self):
+        result = screen.score_setup(make_row(Close=100, SMA20=98, SMA50=90, SMA200=80))
+        assert result["CleanTrend"] == "Clean"
+
+    def test_mixed_when_close_below_sma200_despite_clean_short_term_smas(self):
+        result = screen.score_setup(make_row(Close=100, SMA20=98, SMA50=90, SMA200=110))
+        assert result["CleanTrend"] == "Mixed"
+        assert "Below SMA200" in result["Notes"]
+
+    def test_clean_when_sma200_not_present(self):
+        # Row without SMA200 key should not penalise (e.g. insufficient history)
+        result = screen.score_setup(make_row(Close=100, SMA20=98, SMA50=90))
+        assert result["CleanTrend"] == "Clean"
+
 
 class TestScoreSetupSR:
     def test_clear_when_position_in_middle_range(self):

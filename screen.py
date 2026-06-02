@@ -71,12 +71,16 @@ def safe_round(v, digits=2):
 
 def score_setup(row):
     close, sma20, sma50 = row["Close"], row["SMA20"], row["SMA50"]
+    sma200 = row.get("SMA200", float('nan'))
     volume, avgvol = row["Volume"], row["AvgVolume20"]
     high20, low20, rsi = row["High20"], row["Low20"], row["RSI14"]
     score, notes = 0, []
 
     if pd.notna(close) and pd.notna(sma20) and pd.notna(sma50) and close > sma20 > sma50:
-        score += 20; trend = "Clean"
+        if pd.isna(sma200) or close > sma200:
+            score += 20; trend = "Clean"
+        else:
+            score += 15; trend = "Mixed"; notes.append("Below SMA200")
     elif pd.notna(close) and pd.notna(sma50) and close > sma50:
         score += 10; trend = "Mixed"; notes.append("Trend not fully clean")
     else:
