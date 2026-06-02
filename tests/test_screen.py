@@ -581,3 +581,337 @@ class TestMakeMobileHtml:
         content = open(path, encoding="utf-8").read()
         rendered = sum(1 for i in range(15) if f"ZZ{i:02d}" in content)
         assert rendered == 10
+
+
+# ── make_mobile_html verdict logic ────────────────────────────────────────────
+
+class TestMakeMobileHtmlVerdicts:
+    """Verify all three verdict text branches inside the card() closure."""
+
+    def _read(self, path):
+        return open(path, encoding="utf-8").read()
+
+    def test_grade_a_rr_pass_shows_manual_review_only(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="A", RR_1_to_2_Feasible="Pass")
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Manual review only." in self._read(path)
+
+    def test_grade_b_rr_pass_shows_manual_review_only(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="B", Score=75, Status="Review",
+                                   RR_1_to_2_Feasible="Pass")
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Manual review only." in self._read(path)
+
+    def test_grade_a_rr_not_pass_shows_watch_only(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="A", RR_1_to_2_Feasible="Fail", RR_Estimate=1.0)
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Watch only. R:R not fully 1:2." in self._read(path)
+
+    def test_grade_a_rr_close_shows_watch_only(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="A", RR_1_to_2_Feasible="Close", RR_Estimate=1.7)
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Watch only. R:R not fully 1:2." in self._read(path)
+
+    def test_grade_c_always_shows_reject_verdict(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="C", Score=55, Status="Reject",
+                                   CleanTrend="Weak", RR_1_to_2_Feasible="Pass", RR_Estimate=2.1)
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Reject under current rules." in self._read(path)
+
+    def test_grade_d_always_shows_reject_verdict(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="D", Score=30, Status="Reject",
+                                   CleanTrend="Weak", RR_1_to_2_Feasible="Fail", RR_Estimate=0.5)
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Reject under current rules." in self._read(path)
+
+    def test_grade_a_card_has_grade_a_css_class(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        screen.make_mobile_html(pd.DataFrame([make_full_result_row(FinalGrade="A")]), path)
+        assert "grade-A" in self._read(path)
+
+    def test_grade_b_card_has_grade_b_css_class(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="B", Score=75, Status="Review")
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "grade-B" in self._read(path)
+
+    def test_grade_c_card_has_grade_c_css_class(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="C", Score=55, Status="Reject",
+                                   CleanTrend="Weak", RR_1_to_2_Feasible="Fail", RR_Estimate=1.0)
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "grade-C" in self._read(path)
+
+
+# ── output file content validation ───────────────────────────────────────────
+
+class TestOutputFileContent:
+    """Assert generated files contain meaningful content, not just that they exist."""
+
+    def test_desktop_html_contains_html_table(self, tmp_path):
+        path = str(tmp_path / "report.html")
+        screen.make_desktop_html(pd.DataFrame([make_full_result_row()]), path)
+        assert "<table" in open(path, encoding="utf-8").read()
+
+    def test_desktop_html_score_value_appears_in_table(self, tmp_path):
+        path = str(tmp_path / "report.html")
+        screen.make_desktop_html(pd.DataFrame([make_full_result_row(Score=90)]), path)
+        assert "90" in open(path, encoding="utf-8").read()
+
+    def test_mobile_html_scanned_metric_reflects_row_count(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        rows = [make_full_result_row(Ticker=f"TK{i}", FinalGrade="A") for i in range(3)]
+        screen.make_mobile_html(pd.DataFrame(rows), path)
+        assert "<b>3</b><span>Scanned</span>" in open(path, encoding="utf-8").read()
+
+    def test_mobile_html_contains_tradingview_link(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        screen.make_mobile_html(pd.DataFrame([make_full_result_row(Ticker="AAPL")]), path)
+        assert "tradingview.com" in open(path, encoding="utf-8").read()
+
+    def test_mobile_html_ab_count_metric_is_correct(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        rows = [
+            make_full_result_row(Ticker="T1", FinalGrade="A"),
+            make_full_result_row(Ticker="T2", FinalGrade="B", Score=75, Status="Review"),
+            make_full_result_row(Ticker="T3", FinalGrade="C", Score=55, Status="Reject",
+                                 CleanTrend="Weak", RR_1_to_2_Feasible="Fail", RR_Estimate=1.0),
+        ]
+        screen.make_mobile_html(pd.DataFrame(rows), path)
+        assert "<b>2</b><span>A/B</span>" in open(path, encoding="utf-8").read()
+
+
+# ── fetch_daily additional error paths ───────────────────────────────────────
+
+class TestFetchDailyErrors:
+    def _mock_resp(self, payload):
+        r = MagicMock()
+        r.json.return_value = payload
+        return r
+
+    def test_returns_none_on_api_information_message(self):
+        payload = {"Information": "Thank you for using Alpha Vantage! ..."}
+        with patch("requests.get", return_value=self._mock_resp(payload)):
+            assert screen.fetch_daily("AAPL") is None
+
+    def test_returns_none_on_error_message_key(self):
+        payload = {"Error Message": "Invalid API call."}
+        with patch("requests.get", return_value=self._mock_resp(payload)):
+            assert screen.fetch_daily("BADTICKER") is None
+
+    def test_non_numeric_ohlcv_values_coerced_to_nan(self):
+        payload = {
+            "Time Series (Daily)": {
+                "2024-01-02": {
+                    "1. open": "bad", "2. high": "153.0",
+                    "3. low": "150.0", "4. close": "152.0", "5. volume": "1000000",
+                }
+            }
+        }
+        with patch("requests.get", return_value=self._mock_resp(payload)):
+            df = screen.fetch_daily("AAPL")
+        assert pd.isna(df["Open"].iloc[0])
+        assert df["Close"].iloc[0] == 152.0
+
+
+# ── send_telegram_document error paths ───────────────────────────────────────
+
+class TestSendTelegramDocumentErrors:
+    def test_non_200_response_does_not_raise(self, tmp_path):
+        tmp_file = tmp_path / "report.html"
+        tmp_file.write_text("<html/>")
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = "Bad Request"
+        with patch.object(screen, "TELEGRAM_BOT_TOKEN", "tok"), \
+             patch.object(screen, "TELEGRAM_CHAT_ID", "123"), \
+             patch("requests.post", return_value=mock_response):
+            screen.send_telegram_document(str(tmp_file), "caption")  # must not raise
+
+
+# ── ticker file parsing edge cases ───────────────────────────────────────────
+
+class TestTickerFileParsing:
+    """Ticker file edge cases exercised through main() in real mode."""
+
+    def _run_real_mode(self, tmp_path, tickers_content, fetch_side_effect=None):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text(tickers_content, encoding="utf-8")
+        fetch_mock = MagicMock(side_effect=fetch_side_effect or (lambda s: None))
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.fetch_daily", fetch_mock), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        return fetch_mock
+
+    def test_whitespace_only_lines_are_not_fetched(self, tmp_path):
+        calls = []
+        def track(symbol):
+            calls.append(symbol)
+            return None
+        self._run_real_mode(tmp_path, "  \n\nAAPL\n  \n", fetch_side_effect=track)
+        assert calls == ["AAPL"]
+
+    def test_empty_ticker_file_triggers_no_results_telegram(self, tmp_path):
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tmp_path / "tickers.txt")), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text") as mock_text, \
+             patch("screen.send_telegram_document") as mock_doc:
+            (tmp_path / "tickers.txt").write_text("", encoding="utf-8")
+            screen.main()
+        mock_text.assert_called_once()
+        mock_doc.assert_not_called()
+
+
+# ── generate_sample_results sorting ──────────────────────────────────────────
+
+class TestResultsSorting:
+    def test_results_sorted_by_grade_order(self):
+        results = screen.generate_sample_results()
+        grade_order = {"A": 1, "B": 2, "C": 3, "D": 4}
+        ranks = [grade_order[g] for g in results["FinalGrade"]]
+        assert ranks == sorted(ranks)
+
+    def test_within_same_grade_sorted_by_score_descending(self):
+        results = screen.generate_sample_results()
+        for grade in ["A", "B", "C", "D"]:
+            scores = results[results["FinalGrade"] == grade]["Score"].tolist()
+            assert scores == sorted(scores, reverse=True), \
+                f"Grade {grade} scores not in descending order: {scores}"
+
+    def test_results_contains_all_sample_tickers(self):
+        results = screen.generate_sample_results()
+        expected = {row[0] for row in screen.SAMPLE_SCENARIOS}
+        assert expected == set(results["Ticker"])
+
+
+# ── main() integration ────────────────────────────────────────────────────────
+
+class TestMain:
+    """End-to-end integration tests for the main() pipeline."""
+
+    def _sample_patches(self, tmp_path):
+        """Context managers shared by sample-mode tests."""
+        return (
+            patch("sys.argv", ["screen.py", "--sample"]),
+            patch.object(screen, "OUTPUT_DIR", str(tmp_path)),
+            patch("screen.send_telegram_text"),
+            patch("screen.send_telegram_document"),
+        )
+
+    def test_sample_mode_creates_csv(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert (tmp_path / "daily_rule_report.csv").exists()
+
+    def test_sample_mode_creates_desktop_html(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert (tmp_path / "daily_rule_report.html").exists()
+
+    def test_sample_mode_creates_mobile_html(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert (tmp_path / "index.html").exists()
+
+    def test_sample_mode_csv_has_expected_columns(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        df = pd.read_csv(tmp_path / "daily_rule_report.csv")
+        for col in ["Ticker", "FinalGrade", "Score", "Status", "RR_Estimate"]:
+            assert col in df.columns, f"Missing column: {col}"
+
+    def test_sample_mode_calls_telegram_text_once(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text") as mock_text, \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        mock_text.assert_called_once()
+
+    def test_sample_mode_sends_two_telegram_documents(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document") as mock_doc:
+            screen.main()
+        assert mock_doc.call_count == 2
+
+    def test_missing_api_key_raises_value_error(self):
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", None):
+            with pytest.raises(ValueError, match="ALPHA_VANTAGE_API_KEY"):
+                screen.main()
+
+    def test_real_mode_all_fetches_fail_sends_no_results_telegram(self, tmp_path):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text("FAKE\n", encoding="utf-8")
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.fetch_daily", return_value=None), \
+             patch("screen.send_telegram_text") as mock_text, \
+             patch("screen.send_telegram_document") as mock_doc:
+            screen.main()
+        mock_text.assert_called_once()
+        mock_doc.assert_not_called()
+
+    def test_real_mode_skips_symbol_with_too_few_rows(self, tmp_path):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text("SHORT\n", encoding="utf-8")
+        short_df = make_ohlcv_df(n=30)  # < 60 minimum rows
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.fetch_daily", return_value=short_df), \
+             patch("screen.send_telegram_text") as mock_text, \
+             patch("screen.send_telegram_document") as mock_doc:
+            screen.main()
+        assert not (tmp_path / "daily_rule_report.csv").exists()
+        mock_text.assert_called_once()
+        mock_doc.assert_not_called()
+
+    def test_real_mode_valid_symbol_produces_all_output_files(self, tmp_path):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text("AAPL\n", encoding="utf-8")
+        good_df = make_ohlcv_df(n=200)
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.fetch_daily", return_value=good_df), \
+             patch("time.sleep"), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert (tmp_path / "daily_rule_report.csv").exists()
+        assert (tmp_path / "daily_rule_report.html").exists()
+        assert (tmp_path / "index.html").exists()
+        df = pd.read_csv(tmp_path / "daily_rule_report.csv")
+        assert "AAPL" in df["Ticker"].values
