@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+import requests
 import pytest
 import numpy as np
 import pandas as pd
@@ -277,9 +279,9 @@ class TestScoreSetupChasing:
         assert result["DistanceFromSMA20Pct"] == 999
 
     def test_nan_rsi_prevents_chasing_low(self):
-        # dist=2% (≤5) but rsi=NaN → pd.notna fails → cannot reach Low branch
+        # dist=2% (≤5) but rsi=NaN → pd.notna fails in every branch → always High
         result = screen.score_setup(make_row(Close=100, SMA20=98, RSI14=np.nan))
-        assert result["NotChasing"] in ("Borderline", "High")
+        assert result["NotChasing"] == "High"
 
 
 class TestScoreSetupRobustness:
@@ -581,3 +583,231 @@ class TestMakeMobileHtml:
         content = open(path, encoding="utf-8").read()
         rendered = sum(1 for i in range(15) if f"ZZ{i:02d}" in content)
         assert rendered == 10
+
+    def test_verdict_manual_review_for_grade_a_pass_rr(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        screen.make_mobile_html(pd.DataFrame([make_full_result_row(FinalGrade="A", RR_1_to_2_Feasible="Pass")]), path)
+        assert "Manual review only." in open(path, encoding="utf-8").read()
+
+    def test_verdict_watch_only_for_grade_b_non_pass_rr(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        screen.make_mobile_html(pd.DataFrame([make_full_result_row(FinalGrade="B", RR_1_to_2_Feasible="Close")]), path)
+        assert "Watch only. R:R not fully 1:2." in open(path, encoding="utf-8").read()
+
+    def test_verdict_reject_for_grade_c(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        row = make_full_result_row(FinalGrade="C", Score=60, Status="Reject",
+                                   CleanTrend="Weak", RR_1_to_2_Feasible="Pass")
+        screen.make_mobile_html(pd.DataFrame([row]), path)
+        assert "Reject under current rules." in open(path, encoding="utf-8").read()
+
+    def test_summary_scanned_count(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        rows = [
+            make_full_result_row(Ticker="AAPL", FinalGrade="A"),
+            make_full_result_row(Ticker="MSFT", FinalGrade="B"),
+            make_full_result_row(Ticker="JPM",  FinalGrade="C", Score=60, Status="Reject",
+                                 CleanTrend="Weak", RR_1_to_2_Feasible="Fail"),
+        ]
+        screen.make_mobile_html(pd.DataFrame(rows), path)
+        content = open(path, encoding="utf-8").read()
+        assert "<b>3</b><span>Scanned</span>" in content
+        assert "<b>2</b><span>A/B</span>" in content
+        assert "<b>1</b><span>A</span>" in content
+
+    def test_tradingview_url_present_in_card(self, tmp_path):
+        path = str(tmp_path / "index.html")
+        screen.make_mobile_html(pd.DataFrame([make_full_result_row(Ticker="AAPL", FinalGrade="A")]), path)
+        assert "tradingview.com" in open(path, encoding="utf-8").read()
+
+
+class TestMakeDesktopHtmlContent:
+    def _results(self, **overrides):
+        return pd.DataFrame([make_full_result_row(**overrides)])
+
+    def test_output_contains_final_grade(self, tmp_path):
+        path = str(tmp_path / "report.html")
+        screen.make_desktop_html(self._results(FinalGrade="A"), path)
+        assert "A" in open(path, encoding="utf-8").read()
+
+    def test_output_contains_score(self, tmp_path):
+        path = str(tmp_path / "report.html")
+        screen.make_desktop_html(self._results(Score=90), path)
+        assert "90" in open(path, encoding="utf-8").read()
+
+
+# ── send_telegram_document (extended) ────────────────────────────────────────
+
+class TestSendTelegramDocumentExtended:
+    def test_non_200_response_does_not_raise(self, tmp_path):
+        tmp_file = tmp_path / "report.html"
+        tmp_file.write_text("<html/>")
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = "Bad Request"
+        with patch.object(screen, "TELEGRAM_BOT_TOKEN", "tok"), \
+             patch.object(screen, "TELEGRAM_CHAT_ID", "123"), \
+             patch("requests.post", return_value=mock_response):
+            screen.send_telegram_document(str(tmp_file), "caption")  # must not raise
+
+    def test_caption_is_included_in_request(self, tmp_path):
+        tmp_file = tmp_path / "report.html"
+        tmp_file.write_text("<html/>")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        with patch.object(screen, "TELEGRAM_BOT_TOKEN", "tok"), \
+             patch.object(screen, "TELEGRAM_CHAT_ID", "123"), \
+             patch("requests.post", return_value=mock_response) as mock_post:
+            screen.send_telegram_document(str(tmp_file), "My Caption")
+        assert mock_post.call_args[1]["data"]["caption"] == "My Caption"
+
+
+# ── add_indicators (extended) ─────────────────────────────────────────────────
+
+class TestAddIndicatorsShortDf:
+    def test_sma200_all_nan_for_df_shorter_than_200_rows(self):
+        df = screen.add_indicators(make_ohlcv_df(n=50))
+        assert df["SMA200"].isna().all()
+
+
+# ── fetch_daily (extended) ────────────────────────────────────────────────────
+
+class TestFetchDailyNetworkErrors:
+    def test_raises_on_requests_timeout(self):
+        with patch("requests.get", side_effect=requests.Timeout):
+            with pytest.raises(requests.Timeout):
+                screen.fetch_daily("AAPL")
+
+
+# ── score_setup grade boundaries ─────────────────────────────────────────────
+
+class TestScoreSetupGradeBoundaries:
+    """Pin exact achievable scores at each grade boundary."""
+
+    def test_score_85_is_grade_a(self):
+        # Clean+20, Clear+20, Confirm+15, Borderline+10, Pass+15, News+5 = 85
+        row = make_row(Close=106, SMA20=100, SMA50=90,
+                       High20=160, Low20=80, RSI14=68,
+                       Volume=1_200_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 85
+        assert result["FinalGrade"] == "A"
+
+    def test_score_81_is_grade_b(self):
+        # Clean+20, Clear+20, Neutral+8, Low+20, Close+8, News+5 = 81
+        row = make_row(Close=100, SMA20=98, SMA50=90,
+                       High20=134, Low20=80, RSI14=55,
+                       Volume=900_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 81
+        assert result["FinalGrade"] == "B"
+
+    def test_score_70_is_grade_b(self):
+        # Clean+20, Clear+20, Confirm+15, Borderline+10, Fail+0, News+5 = 70
+        row = make_row(Close=106, SMA20=100, SMA50=90,
+                       High20=120, Low20=80, RSI14=68,
+                       Volume=1_200_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 70
+        assert result["FinalGrade"] == "B"
+
+    def test_score_68_is_grade_c(self):
+        # Clean+20, Clear+20, Neutral+8, High+0, Pass+15, News+5 = 68
+        row = make_row(Close=120, SMA20=100, SMA50=90,
+                       High20=200, Low20=80, RSI14=72,
+                       Volume=900_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 68
+        assert result["FinalGrade"] == "C"
+
+    def test_score_50_is_grade_c(self):
+        # Clean+20, Check+10, Confirm+15, High+0, Fail+0, News+5 = 50
+        row = make_row(Close=120, SMA20=100, SMA50=90,
+                       High20=125, Low20=80, RSI14=75,
+                       Volume=1_200_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 50
+        assert result["FinalGrade"] == "C"
+
+    def test_score_48_is_grade_d(self):
+        # Mixed+10, Check+10, Neutral+8, High+0, Pass+15, News+5 = 48
+        # SMA20 < SMA50 → Mixed; close well above SMA20 → High chasing
+        row = make_row(Close=100, SMA20=85, SMA50=90,
+                       High20=200, Low20=80, RSI14=68,
+                       Volume=900_000, AvgVolume20=1_000_000)
+        result = screen.score_setup(row)
+        assert result["Score"] == 48
+        assert result["FinalGrade"] == "D"
+
+
+# ── generate_sample_results ───────────────────────────────────────────────────
+
+class TestGenerateSampleResults:
+    def test_returns_dataframe(self):
+        assert isinstance(screen.generate_sample_results(), pd.DataFrame)
+
+    def test_contains_all_four_grades(self):
+        grades = set(screen.generate_sample_results()["FinalGrade"].unique())
+        assert grades == {"A", "B", "C", "D"}
+
+    def test_sorted_by_grade_then_score_descending(self):
+        df = screen.generate_sample_results()
+        order = {"A": 1, "B": 2, "C": 3, "D": 4}
+        grade_vals = df["FinalGrade"].map(order).tolist()
+        assert grade_vals == sorted(grade_vals), "grades not in A→D order"
+        for grade in ["A", "B", "C", "D"]:
+            scores = df.loc[df["FinalGrade"] == grade, "Score"].tolist()
+            assert scores == sorted(scores, reverse=True), f"scores within {grade} not descending"
+
+    def test_grade_order_column_is_dropped(self):
+        assert "GradeOrder" not in screen.generate_sample_results().columns
+
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+class TestMain:
+    def test_sample_mode_writes_three_output_files(self, tmp_path):
+        with patch("sys.argv", ["screen.py", "--sample"]), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert (tmp_path / "daily_rule_report.csv").exists()
+        assert (tmp_path / "daily_rule_report.html").exists()
+        assert (tmp_path / "index.html").exists()
+
+    def test_missing_api_key_raises_value_error(self):
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", None):
+            with pytest.raises(ValueError, match="ALPHA_VANTAGE_API_KEY"):
+                screen.main()
+
+    def test_empty_results_sends_telegram_and_returns_early(self, tmp_path):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text("AAPL\nMSFT\n")
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch("screen.fetch_daily", return_value=None), \
+             patch("time.sleep"), \
+             patch("screen.send_telegram_text") as mock_tg, \
+             patch("screen.send_telegram_document") as mock_doc:
+            screen.main()
+        mock_tg.assert_called_once()
+        assert "no results" in mock_tg.call_args[0][0].lower()
+        mock_doc.assert_not_called()
+
+    def test_rate_limit_sleep_called_per_ticker(self, tmp_path):
+        tickers_file = tmp_path / "tickers.txt"
+        tickers_file.write_text("AAPL\nMSFT\n")
+        with patch("sys.argv", ["screen.py"]), \
+             patch.object(screen, "API_KEY", "dummy"), \
+             patch.object(screen, "TICKERS_FILE", str(tickers_file)), \
+             patch.object(screen, "OUTPUT_DIR", str(tmp_path)), \
+             patch("screen.fetch_daily", return_value=make_ohlcv_df(n=200)), \
+             patch("time.sleep") as mock_sleep, \
+             patch("screen.send_telegram_text"), \
+             patch("screen.send_telegram_document"):
+            screen.main()
+        assert mock_sleep.call_count == 2
+        mock_sleep.assert_called_with(15)
