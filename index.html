@@ -6,165 +6,191 @@
 .title{font-size:15px;font-weight:800;margin:18px 0 10px}.card{background:linear-gradient(180deg,#141b24,#0a0e14);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:0 10px 28px rgba(0,0,0,.25)}.card.grade-A{border-color:rgba(57,211,83,.6)}.card.grade-B{border-color:rgba(245,217,10,.55)}.card.grade-C,.card.grade-D{border-color:rgba(255,91,107,.45)}
 .top{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center}.ticker{font-size:24px;font-weight:900}.sub{font-size:12px;color:var(--muted);margin-top:2px}.grade{min-width:34px;text-align:center;border-radius:9px;padding:6px 8px;font-weight:900;color:#080a0d}.grade-A .grade{background:var(--green)}.grade-B .grade{background:var(--yellow)}.grade-C .grade,.grade-D .grade{background:var(--red);color:white}.score{font-size:22px;font-weight:900;text-align:right}.score small{display:block;font-size:11px;color:var(--muted)}.rules{margin-top:12px;background:rgba(255,255,255,.03);border-radius:14px;padding:10px}.rules div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}.rules div:last-child{border-bottom:0}.rules span{color:var(--muted);font-size:13px}.rules b{font-size:13px;text-align:right}.verdict{margin-top:12px;padding:10px;border-radius:12px;background:rgba(245,217,10,.08);border:1px solid rgba(245,217,10,.25);font-size:13px;color:#ffe66b}.btn{display:block;text-align:center;margin-top:10px;padding:11px;border-radius:12px;text-decoration:none;color:#dcecff;border:1px solid rgba(88,166,255,.55);background:rgba(88,166,255,.08);font-weight:700}.rank{display:flex;justify-content:space-between;gap:12px;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:8px}.rank span{color:var(--muted)}.note{margin-top:14px;background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.25);border-radius:16px;padding:12px;color:#dcecff;font-size:13px;line-height:1.45}.empty{padding:18px;background:var(--panel);border:1px dashed var(--line);border-radius:16px;color:var(--muted);text-align:center}.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(5,7,10,.95);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 8px 22px}.nav a{color:var(--muted);text-decoration:none;font-size:11px;text-align:center}.nav b{display:block;font-size:18px;margin-bottom:2px;color:var(--green)}
 </style></head><body>
-<header class="header"><h1>Daily Rule Quality Report</h1><div class="meta">Generated: 03 Aug 2026, 11:43 PM MYT · Setup quality only</div><div class="summary"><div class="metric"><b>25</b><span>Scanned</span></div><div class="metric"><b>2</b><span>A/B</span></div><div class="metric"><b>0</b><span>A</span></div><div class="metric"><b>2</b><span>B</span></div></div></header>
+<header class="header"><h1>Daily Rule Quality Report</h1><div class="meta">Generated: 04 Aug 2026, 11:39 PM MYT · Setup quality only</div><div class="summary"><div class="metric"><b>25</b><span>Scanned</span></div><div class="metric"><b>4</b><span>A/B</span></div><div class="metric"><b>0</b><span>A</span></div><div class="metric"><b>4</b><span>B</span></div></div></header>
 <div id="ab" class="title">A/B Candidates</div>
 <section class="card grade-B">
-  <div class="top"><div><div class="ticker">JNJ</div><div class="sub">Close 254.41 · 2026-08-03</div></div><div class="grade">B</div><div class="score">78<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">CVX</div><div class="sub">Close 190.4 · 2026-08-04</div></div><div class="grade">B</div><div class="score">80<small>Score</small></div></div>
+  <div class="rules">
+    <div><span>Trend</span><b>✅ Clean</b></div>
+    <div><span>S/R</span><b>✅ Clear</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.25x)</b></div>
+    <div><span>Chasing</span><b>✅ Low</b></div>
+    <div><span>R:R</span><b>❌ 0.43</b></div>
+    <div><span>News</span><b>⚠️ Manual</b></div>
+  </div>
+  <div class="verdict">Watch only. R:R not fully 1:2.</div>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ACVX">Open TradingView Chart</a>
+</section>
+<section class="card grade-B">
+  <div class="top"><div><div class="ticker">JNJ</div><div class="sub">Close 254.93 · 2026-08-04</div></div><div class="grade">B</div><div class="score">78<small>Score</small></div></div>
   <div class="rules">
     <div><span>Trend</span><b>⚠️ Mixed</b></div>
     <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>⚠️ Neutral (0.94x)</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (0.87x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>✅ 2.3</b></div>
+    <div><span>R:R</span><b>✅ 2.12</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Manual review only.</div>
   <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AJNJ">Open TradingView Chart</a>
 </section>
 <section class="card grade-B">
-  <div class="top"><div><div class="ticker">ABBV</div><div class="sub">Close 245.1 · 2026-08-03</div></div><div class="grade">B</div><div class="score">75<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">ABBV</div><div class="sub">Close 243.8 · 2026-08-04</div></div><div class="grade">B</div><div class="score">75<small>Score</small></div></div>
   <div class="rules">
     <div><span>Trend</span><b>⚠️ Mixed</b></div>
     <div><span>S/R</span><b>⚠️ Check</b></div>
-    <div><span>Volume</span><b>✅ Confirm (1.23x)</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.29x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>✅ 11.02</b></div>
+    <div><span>R:R</span><b>✅ 16.73</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Manual review only.</div>
   <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AABBV">Open TradingView Chart</a>
 </section>
-<div id="top" class="title">Top 5 Overall</div><div class='rank'><b>1. JNJ</b><span>B · 78 · Review</span></div><div class='rank'><b>2. ABBV</b><span>B · 75 · Review</span></div><div class='rank'><b>3. CAT</b><span>C · 68 · Reject</span></div><div class='rank'><b>4. V</b><span>C · 65 · Reject</span></div><div class='rank'><b>5. AAPL</b><span>C · 65 · Reject</span></div>
+<section class="card grade-B">
+  <div class="top"><div><div class="ticker">AMD</div><div class="sub">Close 518.58 · 2026-08-04</div></div><div class="grade">B</div><div class="score">70<small>Score</small></div></div>
+  <div class="rules">
+    <div><span>Trend</span><b>⚠️ Mixed</b></div>
+    <div><span>S/R</span><b>✅ Clear</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.52x)</b></div>
+    <div><span>Chasing</span><b>✅ Low</b></div>
+    <div><span>R:R</span><b>❌ 0.59</b></div>
+    <div><span>News</span><b>⚠️ Manual</b></div>
+  </div>
+  <div class="verdict">Watch only. R:R not fully 1:2.</div>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AAMD">Open TradingView Chart</a>
+</section>
+<div id="top" class="title">Top 5 Overall</div><div class='rank'><b>1. CVX</b><span>B · 80 · Review</span></div><div class='rank'><b>2. JNJ</b><span>B · 78 · Review</span></div><div class='rank'><b>3. ABBV</b><span>B · 75 · Review</span></div><div class='rank'><b>4. AMD</b><span>B · 70 · Review</span></div><div class='rank'><b>5. LLY</b><span>C · 65 · Reject</span></div>
 <div id="rejected" class="title">Rejected / Low Quality</div>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">CAT</div><div class="sub">Close 830.03 · 2026-08-03</div></div><div class="grade">C</div><div class="score">68<small>Score</small></div></div>
-  <div class="rules">
-    <div><span>Trend</span><b>❌ Weak</b></div>
-    <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>⚠️ Neutral (1.08x)</b></div>
-    <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>✅ 2.83</b></div>
-    <div><span>News</span><b>⚠️ Manual</b></div>
-  </div>
-  <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ACAT">Open TradingView Chart</a>
-</section>
-<section class="card grade-C">
-  <div class="top"><div><div class="ticker">V</div><div class="sub">Close 365.67 · 2026-08-03</div></div><div class="grade">C</div><div class="score">65<small>Score</small></div></div>
-  <div class="rules">
-    <div><span>Trend</span><b>✅ Clean</b></div>
-    <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>❌ Weak (0.74x)</b></div>
-    <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>❌ 0.39</b></div>
-    <div><span>News</span><b>⚠️ Manual</b></div>
-  </div>
-  <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AV">Open TradingView Chart</a>
-</section>
-<section class="card grade-C">
-  <div class="top"><div><div class="ticker">AAPL</div><div class="sub">Close 303.42 · 2026-08-03</div></div><div class="grade">C</div><div class="score">65<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">LLY</div><div class="sub">Close 1115.68 · 2026-08-04</div></div><div class="grade">C</div><div class="score">65<small>Score</small></div></div>
   <div class="rules">
     <div><span>Trend</span><b>❌ Weak</b></div>
     <div><span>S/R</span><b>⚠️ Check</b></div>
-    <div><span>Volume</span><b>✅ Confirm (1.35x)</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.66x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>✅ 12.03</b></div>
-    <div><span>News</span><b>⚠️ Manual</b></div>
-  </div>
-  <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AAAPL">Open TradingView Chart</a>
-</section>
-<section class="card grade-C">
-  <div class="top"><div><div class="ticker">LLY</div><div class="sub">Close 1121.36 · 2026-08-03</div></div><div class="grade">C</div><div class="score">65<small>Score</small></div></div>
-  <div class="rules">
-    <div><span>Trend</span><b>❌ Weak</b></div>
-    <div><span>S/R</span><b>⚠️ Check</b></div>
-    <div><span>Volume</span><b>✅ Confirm (1.22x)</b></div>
-    <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>✅ 10.49</b></div>
+    <div><span>R:R</span><b>✅ 19.33</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
   <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ALLY">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">NVDA</div><div class="sub">Close 206.64 · 2026-08-03</div></div><div class="grade">C</div><div class="score">63<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">JPM</div><div class="sub">Close 357.52 · 2026-08-04</div></div><div class="grade">C</div><div class="score">63<small>Score</small></div></div>
   <div class="rules">
-    <div><span>Trend</span><b>⚠️ Mixed</b></div>
-    <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>⚠️ Neutral (0.99x)</b></div>
+    <div><span>Trend</span><b>✅ Clean</b></div>
+    <div><span>S/R</span><b>⚠️ Check</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (0.9x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>❌ 0.47</b></div>
+    <div><span>R:R</span><b>❌ 0.17</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3ANVDA">Open TradingView Chart</a>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AJPM">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">WMT</div><div class="sub">Close 110.71 · 2026-08-03</div></div><div class="grade">C</div><div class="score">61<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">V</div><div class="sub">Close 369.59 · 2026-08-04</div></div><div class="grade">C</div><div class="score">63<small>Score</small></div></div>
   <div class="rules">
-    <div><span>Trend</span><b>❌ Weak</b></div>
-    <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>⚠️ Neutral (1.14x)</b></div>
+    <div><span>Trend</span><b>✅ Clean</b></div>
+    <div><span>S/R</span><b>⚠️ Check</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (1.0x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>⚠️ 1.88</b></div>
+    <div><span>R:R</span><b>❌ 0.17</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AWMT">Open TradingView Chart</a>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AV">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">LRCX</div><div class="sub">Close 294.61 · 2026-08-03</div></div><div class="grade">C</div><div class="score">61<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">BAC</div><div class="sub">Close 62.9 · 2026-08-04</div></div><div class="grade">C</div><div class="score">63<small>Score</small></div></div>
   <div class="rules">
-    <div><span>Trend</span><b>❌ Weak</b></div>
-    <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>⚠️ Neutral (0.86x)</b></div>
+    <div><span>Trend</span><b>✅ Clean</b></div>
+    <div><span>S/R</span><b>⚠️ Check</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (0.85x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>⚠️ 1.71</b></div>
+    <div><span>R:R</span><b>❌ 0.14</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3ALRCX">Open TradingView Chart</a>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ABAC">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">META</div><div class="sub">Close 590.24 · 2026-08-03</div></div><div class="grade">C</div><div class="score">60<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">META</div><div class="sub">Close 587.94 · 2026-08-04</div></div><div class="grade">C</div><div class="score">61<small>Score</small></div></div>
   <div class="rules">
     <div><span>Trend</span><b>❌ Weak</b></div>
     <div><span>S/R</span><b>✅ Clear</b></div>
-    <div><span>Volume</span><b>✅ Confirm (1.31x)</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (0.91x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>❌ 1.46</b></div>
+    <div><span>R:R</span><b>⚠️ 1.55</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
   <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AMETA">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">CVX</div><div class="sub">Close 193.18 · 2026-08-03</div></div><div class="grade">C</div><div class="score">60<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">WMT</div><div class="sub">Close 111.55 · 2026-08-04</div></div><div class="grade">C</div><div class="score">60<small>Score</small></div></div>
   <div class="rules">
-    <div><span>Trend</span><b>✅ Clean</b></div>
-    <div><span>S/R</span><b>⚠️ Check</b></div>
-    <div><span>Volume</span><b>✅ Confirm (1.25x)</b></div>
-    <div><span>Chasing</span><b>⚠️ Borderline</b></div>
-    <div><span>R:R</span><b>❌ 0.19</b></div>
+    <div><span>Trend</span><b>❌ Weak</b></div>
+    <div><span>S/R</span><b>✅ Clear</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.37x)</b></div>
+    <div><span>Chasing</span><b>✅ Low</b></div>
+    <div><span>R:R</span><b>❌ 1.37</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ACVX">Open TradingView Chart</a>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AWMT">Open TradingView Chart</a>
 </section>
 <section class="card grade-C">
-  <div class="top"><div><div class="ticker">JPM</div><div class="sub">Close 352.64 · 2026-08-03</div></div><div class="grade">C</div><div class="score">55<small>Score</small></div></div>
+  <div class="top"><div><div class="ticker">CAT</div><div class="sub">Close 876.54 · 2026-08-04</div></div><div class="grade">C</div><div class="score">60<small>Score</small></div></div>
   <div class="rules">
-    <div><span>Trend</span><b>✅ Clean</b></div>
-    <div><span>S/R</span><b>⚠️ Check</b></div>
-    <div><span>Volume</span><b>❌ Weak (0.69x)</b></div>
+    <div><span>Trend</span><b>❌ Weak</b></div>
+    <div><span>S/R</span><b>✅ Clear</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.93x)</b></div>
     <div><span>Chasing</span><b>✅ Low</b></div>
-    <div><span>R:R</span><b>❌ 0.25</b></div>
+    <div><span>R:R</span><b>❌ 1.06</b></div>
     <div><span>News</span><b>⚠️ Manual</b></div>
   </div>
   <div class="verdict">Reject under current rules.</div>
-  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AJPM">Open TradingView Chart</a>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3ACAT">Open TradingView Chart</a>
+</section>
+<section class="card grade-C">
+  <div class="top"><div><div class="ticker">LRCX</div><div class="sub">Close 317.74 · 2026-08-04</div></div><div class="grade">C</div><div class="score">60<small>Score</small></div></div>
+  <div class="rules">
+    <div><span>Trend</span><b>❌ Weak</b></div>
+    <div><span>S/R</span><b>✅ Clear</b></div>
+    <div><span>Volume</span><b>✅ Confirm (1.35x)</b></div>
+    <div><span>Chasing</span><b>✅ Low</b></div>
+    <div><span>R:R</span><b>❌ 0.78</b></div>
+    <div><span>News</span><b>⚠️ Manual</b></div>
+  </div>
+  <div class="verdict">Reject under current rules.</div>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3ALRCX">Open TradingView Chart</a>
+</section>
+<section class="card grade-C">
+  <div class="top"><div><div class="ticker">AAPL</div><div class="sub">Close 309.38 · 2026-08-04</div></div><div class="grade">C</div><div class="score">58<small>Score</small></div></div>
+  <div class="rules">
+    <div><span>Trend</span><b>❌ Weak</b></div>
+    <div><span>S/R</span><b>⚠️ Check</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (1.19x)</b></div>
+    <div><span>Chasing</span><b>✅ Low</b></div>
+    <div><span>R:R</span><b>✅ 3.75</b></div>
+    <div><span>News</span><b>⚠️ Manual</b></div>
+  </div>
+  <div class="verdict">Reject under current rules.</div>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NASDAQ%3AAAPL">Open TradingView Chart</a>
+</section>
+<section class="card grade-C">
+  <div class="top"><div><div class="ticker">MA</div><div class="sub">Close 571.1 · 2026-08-04</div></div><div class="grade">C</div><div class="score">53<small>Score</small></div></div>
+  <div class="rules">
+    <div><span>Trend</span><b>✅ Clean</b></div>
+    <div><span>S/R</span><b>⚠️ Check</b></div>
+    <div><span>Volume</span><b>⚠️ Neutral (1.03x)</b></div>
+    <div><span>Chasing</span><b>⚠️ Borderline</b></div>
+    <div><span>R:R</span><b>❌ 0.23</b></div>
+    <div><span>News</span><b>⚠️ Manual</b></div>
+  </div>
+  <div class="verdict">Reject under current rules.</div>
+  <a class="btn" href="https://www.tradingview.com/chart/?symbol=NYSE%3AMA">Open TradingView Chart</a>
 </section>
 <div id="notes" class="note"><b>Important:</b><br>This is not a buy/sell signal. Manual chart review, news check, and real R:R confirmation are required.</div>
 <nav class="nav"><a href="#ab"><b>◆</b>A/B</a><a href="#top"><b>★</b>Top</a><a href="#rejected"><b>⊘</b>Reject</a><a href="#notes"><b>!</b>Notes</a></nav>
