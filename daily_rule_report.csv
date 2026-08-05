@@ -1,26 +1,26 @@
 Ticker,Date,Close,Volume,SMA20,SMA50,SMA200,RSI14,ATR14,Score,FinalGrade,Status,CleanTrend,ClearSR,VolumeConfirmation,NotChasing,RR_1_to_2_Feasible,NewsRisk,VolumeRatio,DistanceFromSMA20Pct,RR_Estimate,Notes
-CVX,2026-08-04,190.4,9444211,187.42,182.77,,62.2,4.52,80,B,Review,Clean,Clear,Confirm,Low,Fail,Manual,1.25,1.59,0.43,Poor estimated R:R
-JNJ,2026-08-04,254.93,7019275,256.93,246.17,,59.41,6.38,78,B,Review,Mixed,Clear,Neutral,Low,Pass,Manual,0.87,-0.78,2.12,Trend not fully clean; Volume not strong
-ABBV,2026-08-04,243.8,7621677,252.81,239.32,,49.7,6.89,75,B,Review,Mixed,Check,Confirm,Low,Pass,Manual,1.29,-3.56,16.73,Trend not fully clean; Near 20-day range edge
-AMD,2026-08-04,518.58,42871841,511.81,514.33,,48.35,41.3,70,B,Review,Mixed,Clear,Confirm,Low,Fail,Manual,1.52,1.32,0.59,Trend not fully clean; Poor estimated R:R
-LLY,2026-08-04,1115.68,4051655,1174.85,1150.85,,42.07,36.4,65,C,Reject,Weak,Check,Confirm,Low,Pass,Manual,1.66,-5.04,19.33,Trend not clean; Near 20-day range edge
-JPM,2026-08-04,357.52,8392040,345.88,329.79,,60.22,7.32,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,0.9,3.37,0.17,Near 20-day range edge; Volume not strong; Poor estimated R:R
-V,2026-08-04,369.59,7416058,359.0,341.91,,63.98,8.14,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,1.0,2.95,0.17,Near 20-day range edge; Volume not strong; Poor estimated R:R
-BAC,2026-08-04,62.9,28212539,61.16,57.7,,58.82,1.07,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,0.85,2.85,0.14,Near 20-day range edge; Volume not strong; Poor estimated R:R
-META,2026-08-04,587.94,17564391,618.92,601.5,,26.16,24.74,61,C,Reject,Weak,Clear,Neutral,Low,Close,Manual,0.91,-5.01,1.55,Trend not clean; Volume not strong; R:R not fully 1:2
-WMT,2026-08-04,111.55,29264115,112.14,115.04,,47.47,2.82,60,C,Reject,Weak,Clear,Confirm,Low,Fail,Manual,1.37,-0.53,1.37,Trend not clean; Poor estimated R:R
-CAT,2026-08-04,876.54,6059214,881.48,919.44,,43.57,44.86,60,C,Reject,Weak,Clear,Confirm,Low,Fail,Manual,1.93,-0.56,1.06,Trend not clean; Poor estimated R:R
-LRCX,2026-08-04,317.74,15675093,313.6,338.28,,45.33,25.09,60,C,Reject,Weak,Clear,Confirm,Low,Fail,Manual,1.35,1.32,0.78,Trend not clean; Poor estimated R:R
-AAPL,2026-08-04,309.38,66634456,323.84,309.61,,38.91,9.84,58,C,Reject,Weak,Check,Neutral,Low,Pass,Manual,1.19,-4.47,3.75,Trend not clean; Near 20-day range edge; Volume not strong
-MA,2026-08-04,571.1,3129935,546.69,517.02,,68.16,12.44,53,C,Reject,Clean,Check,Neutral,Borderline,Fail,Manual,1.03,4.46,0.23,Near 20-day range edge; Volume not strong; Slightly extended; Poor estimated R:R
-NVDA,2026-08-04,211.94,128997875,204.6,205.69,,49.56,7.75,53,C,Reject,Mixed,Check,Neutral,Low,Fail,Manual,1.0,3.59,0.11,Trend not fully clean; Near 20-day range edge; Volume not strong; Poor estimated R:R
-NFLX,2026-08-04,73.57,42631129,72.04,76.5,,49.69,2.7,53,C,Reject,Weak,Clear,Neutral,Low,Fail,Manual,0.87,2.13,0.36,Trend not clean; Volume not strong; Poor estimated R:R
-COST,2026-08-04,947.85,2416640,939.36,955.38,,62.32,19.77,53,C,Reject,Weak,Clear,Neutral,Low,Fail,Manual,1.09,0.9,0.98,Trend not clean; Volume not strong; Poor estimated R:R
-AMZN,2026-08-04,277.42,67689002,247.42,247.19,,61.48,9.98,50,C,Reject,Clean,Check,Confirm,High,Fail,Manual,1.37,12.12,0.19,Near 20-day range edge; Chasing risk; Poor estimated R:R
-MSFT,2026-08-04,492.81,49653444,407.11,402.21,,80.6,17.93,50,C,Reject,Clean,Check,Confirm,High,Fail,Manual,1.28,21.05,0.06,Near 20-day range edge; Chasing risk; Poor estimated R:R
-AVGO,2026-08-04,418.16,29121429,388.02,394.87,,59.45,17.42,50,C,Reject,Mixed,Check,Confirm,Borderline,Fail,Manual,1.42,7.77,0.06,Trend not fully clean; Near 20-day range edge; Slightly extended; Poor estimated R:R
-XOM,2026-08-04,153.96,14017862,149.96,146.34,,70.31,3.93,43,D,Reject,Clean,Check,Neutral,High,Fail,Manual,0.96,2.67,0.3,Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
-BRK.B,2026-08-04,517.22,4734381,498.53,492.77,,83.24,7.44,43,D,Reject,Clean,Check,Neutral,High,Fail,Manual,1.15,3.75,0.11,Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
-GOOGL,2026-08-04,377.65,35362362,348.94,358.23,,52.59,13.86,33,D,Reject,Mixed,Check,Neutral,High,Fail,Manual,1.13,8.23,0.05,Trend not fully clean; Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
-CSCO,2026-08-04,121.74,24900732,114.75,117.77,,71.55,3.45,33,D,Reject,Mixed,Check,Neutral,High,Fail,Manual,1.19,6.09,0.01,Trend not fully clean; Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
-ORCL,2026-08-04,145.74,41303615,128.99,163.11,,59.68,7.56,23,D,Reject,Weak,Check,Neutral,High,Fail,Manual,1.06,12.98,0.11,Trend not clean; Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+XOM,2026-08-05,151.63,12145976,150.49,146.28,,61.75,4.04,73,B,Review,Clean,Clear,Neutral,Low,Fail,Manual,0.85,0.76,0.51,Volume not strong; Poor estimated R:R
+GOOGL,2026-08-05,362.43,46425221,348.96,357.82,,53.1,14.2,70,B,Review,Mixed,Clear,Confirm,Low,Fail,Manual,1.43,3.86,0.46,Trend not fully clean; Poor estimated R:R
+LLY,2026-08-05,1169.86,6400170,1172.55,1152.95,,50.12,40.22,70,B,Review,Mixed,Clear,Confirm,Low,Fail,Manual,2.43,-0.23,1.02,Trend not fully clean; Poor estimated R:R
+ABBV,2026-08-05,246.2,5078420,252.48,239.93,,40.59,6.5,68,C,Reject,Mixed,Check,Neutral,Low,Pass,Manual,0.88,-2.49,5.58,Trend not fully clean; Near 20-day range edge; Volume not strong
+AAPL,2026-08-05,311.0,48650824,323.72,309.65,,35.64,9.7,68,C,Reject,Mixed,Check,Neutral,Low,Pass,Manual,0.86,-3.93,3.05,Trend not fully clean; Near 20-day range edge; Volume not strong
+AMD,2026-08-05,482.05,48589172,510.04,514.62,,47.13,41.52,68,C,Reject,Weak,Clear,Confirm,Low,Close,Manual,1.63,-5.49,1.59,Trend not clean; R:R not fully 1:2
+JNJ,2026-08-05,257.59,6289882,256.64,246.63,,59.12,6.2,65,C,Reject,Clean,Clear,Weak,Low,Fail,Manual,0.78,0.37,1.43,Weak volume; Poor estimated R:R
+V,2026-08-05,368.54,5966296,360.05,342.71,,53.98,7.83,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,0.83,2.36,0.23,Near 20-day range edge; Volume not strong; Poor estimated R:R
+MA,2026-08-05,570.48,2427261,549.22,518.46,,61.39,11.95,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,0.8,3.87,0.24,Near 20-day range edge; Volume not strong; Poor estimated R:R
+CVX,2026-08-05,186.41,8160600,187.94,182.67,,53.37,4.66,63,C,Reject,Mixed,Clear,Neutral,Low,Fail,Manual,1.09,-0.81,0.87,Trend not fully clean; Volume not strong; Poor estimated R:R
+BAC,2026-08-05,63.25,30067496,61.41,57.93,,61.46,1.05,63,C,Reject,Clean,Check,Neutral,Low,Fail,Manual,0.91,3.0,0.07,Near 20-day range edge; Volume not strong; Poor estimated R:R
+META,2026-08-05,588.77,14711388,618.2,601.07,,28.94,24.68,53,C,Reject,Weak,Clear,Weak,Low,Close,Manual,0.76,-4.76,1.51,Trend not clean; Weak volume; R:R not fully 1:2
+WMT,2026-08-05,112.34,19494127,112.1,114.88,,42.63,2.73,53,C,Reject,Weak,Clear,Neutral,Low,Fail,Manual,0.92,0.21,1.04,Trend not clean; Volume not strong; Poor estimated R:R
+CAT,2026-08-05,871.08,3075184,877.63,919.26,,48.84,44.17,53,C,Reject,Weak,Clear,Neutral,Low,Fail,Manual,0.97,-0.75,1.18,Trend not clean; Volume not strong; Poor estimated R:R
+JPM,2026-08-05,359.24,5078144,347.31,330.85,,66.14,7.07,45,D,Reject,Clean,Check,Weak,Borderline,Fail,Manual,0.59,3.43,0.11,Near 20-day range edge; Weak volume; Slightly extended; Poor estimated R:R
+COST,2026-08-05,941.99,1671777,938.8,953.65,,48.28,19.23,45,D,Reject,Weak,Clear,Weak,Low,Fail,Manual,0.75,0.34,1.31,Trend not clean; Weak volume; Poor estimated R:R
+LRCX,2026-08-05,307.42,8648094,312.32,338.32,,46.34,24.86,45,D,Reject,Weak,Clear,Weak,Low,Fail,Manual,0.74,-1.57,1.1,Trend not clean; Weak volume; Poor estimated R:R
+AMZN,2026-08-05,272.65,44398142,248.87,247.31,,61.67,10.12,43,D,Reject,Clean,Check,Neutral,High,Fail,Manual,0.88,9.55,0.31,Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+MSFT,2026-08-05,487.46,32974936,412.32,403.59,,77.22,17.83,43,D,Reject,Clean,Check,Neutral,High,Fail,Manual,0.84,18.22,0.1,Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+BRK.B,2026-08-05,518.85,3697372,499.73,493.42,,81.93,7.48,43,D,Reject,Clean,Check,Neutral,High,Fail,Manual,0.9,3.83,0.06,Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+NVDA,2026-08-05,219.22,155676510,205.36,205.76,,58.94,8.01,43,D,Reject,Mixed,Check,Neutral,Borderline,Fail,Manual,1.2,6.75,0.1,Trend not fully clean; Near 20-day range edge; Volume not strong; Slightly extended; Poor estimated R:R
+NFLX,2026-08-05,74.2,28755694,71.97,76.21,,49.57,2.73,35,D,Reject,Weak,Check,Weak,Low,Fail,Manual,0.59,3.1,0.16,Trend not clean; Near 20-day range edge; Weak volume; Poor estimated R:R
+CSCO,2026-08-05,121.5,18052436,115.13,117.79,,77.85,3.81,33,D,Reject,Mixed,Check,Neutral,High,Fail,Manual,0.86,5.53,0.19,Trend not fully clean; Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+AVGO,2026-08-05,418.28,16620749,389.49,394.95,,70.55,16.55,33,D,Reject,Mixed,Check,Neutral,High,Fail,Manual,0.84,7.39,0.14,Trend not fully clean; Near 20-day range edge; Volume not strong; Chasing risk; Poor estimated R:R
+ORCL,2026-08-05,144.39,21616882,129.19,162.16,,66.41,7.2,15,D,Reject,Weak,Check,Weak,High,Fail,Manual,0.56,11.77,0.16,Trend not clean; Near 20-day range edge; Weak volume; Chasing risk; Poor estimated R:R
